@@ -1,12 +1,12 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+Behavioural guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks (typos, obvious one-liners), use judgment.
+**Trade-off:** These guidelines bias toward caution over speed. For trivial tasks (typos, obvious one-liners), use judgement.
 
 ## 1. Think Before Coding
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+**Don’t assume. Don’t hide confusion. Surface trade-offs.**
 
 Before implementing, briefly state:
 - Key assumptions (or say “none”)
@@ -14,6 +14,8 @@ Before implementing, briefly state:
 - Whether a simpler approach exists
 
 If uncertain → stop and ask. Do not pick silently.
+
+Use existing codebase conventions when they are clear. Only ask when an assumption could lead to the wrong implementation. Do not question every small detail.
 
 ## 2. Simplicity First
 
@@ -24,6 +26,8 @@ If uncertain → stop and ask. Do not pick silently.
 - No “flexibility” or “configurability” that wasn’t requested
 - No error handling for impossible scenarios
 - If 200 lines could be 50, rewrite it
+
+The goal is not to avoid good design. It is to avoid introducing complexity before there is a clear reason for it.
 
 Ask: “Would a senior engineer say this is overcomplicated?” If yes, simplify.
 
@@ -41,7 +45,7 @@ When your changes create orphans:
 - Remove imports/variables/functions that *your* changes made unused
 - Don’t remove pre-existing dead code unless asked
 
-The test: Every changed line should trace directly to the user’s request.
+Every changed line should have a clear reason for being there and trace directly to the user’s request. Large, unfocused diffs make review harder and increase the risk of regressions.
 
 ## 4. Goal-Driven Execution
 
@@ -52,16 +56,21 @@ Transform tasks into verifiable goals:
 - “Fix the bug” → “Write a test that reproduces it, then make it pass”
 - “Refactor X” → “Ensure tests pass before and after”
 
-For multi-step tasks, state a short plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-```
+Preferred loop for bugs and behaviour changes:
+1. Define the expected behaviour
+2. Write a test that reproduces the current (incorrect) behaviour
+3. Implement the fix
+4. Confirm the test now passes
+5. Check relevant edge cases and run existing tests to ensure nothing else broke
 
 Before declaring done: confirm the success criteria are met (test, command, or explicit check). Do not rely on “it looks correct.”
 
+Clear, verifiable criteria let the agent work more independently and reduce the need for step-by-step guidance.
+
 ---
 
-**Working indicators:** fewer unnecessary diff changes, fewer rewrites from overcomplication, clarifying questions before implementation, clean minimal PRs.
+**Working indicators:** fewer unnecessary diff changes, fewer rewrites from overcomplication, clarifying questions before implementation (not after), clean minimal PRs.
+
+These guidelines do not replace project-specific context (build commands, testing instructions, architecture, conventions, etc.). Include information that helps the agent make better decisions rather than rules it can already infer.
 
 See `EXAMPLES.md` for concrete illustrations of each principle.
